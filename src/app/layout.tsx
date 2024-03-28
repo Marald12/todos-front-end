@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
-import './globals.scss'
+import '@/assets/styles/globals.scss'
 import ApiProvider from '@/features/api-provider/ApiProvider'
+import Header from '@/widgets/header/Header'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export const metadata: Metadata = {
 	title: 'Todo - Напоминание',
@@ -14,8 +17,12 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='ru'>
-			<body className='dark'>
-				<ApiProvider>{children}</ApiProvider>
+			<body className='dark max-w-screen-2xl m-auto'>
+				<ApiProvider>
+					<Header />
+					<main>{children}</main>
+					<ToastContainer theme='dark' position='bottom-right' />
+				</ApiProvider>
 			</body>
 		</html>
 	)
