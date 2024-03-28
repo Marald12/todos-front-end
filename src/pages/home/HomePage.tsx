@@ -8,9 +8,9 @@ const HomePage: FC = () => {
 	const router = useRouter()
 
 	useEffect(() => {
-		if (isAuth) router.push('/token')
+		if (isAuth) router.push('/todos')
 		else router.push('/auth')
-	}, [])
+	}, [isAuth])
 
 	return <></>
 }

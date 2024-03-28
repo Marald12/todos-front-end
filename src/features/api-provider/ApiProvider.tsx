@@ -3,9 +3,9 @@
 import { FC, PropsWithChildren } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-const ApiProvider: FC<PropsWithChildren> = ({ children }) => {
-	const queryClient = new QueryClient()
+const queryClient = new QueryClient()
 
+const ApiProvider: FC<PropsWithChildren> = ({ children }) => {
 	return (
 		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 	)

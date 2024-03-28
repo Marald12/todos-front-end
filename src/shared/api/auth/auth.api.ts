@@ -10,13 +10,13 @@ import { setCookie } from 'cookies-next'
 
 export const login = async (body: ILoginDto) => {
 	try {
-		const response = await axiosMain().post<IAuth>('/auth/login', body)
+		const request = await axiosMain().post<IAuth>('/auth/login', body)
 
-		setCookie('token', response.data.token)
+		setCookie('token', request.data.token)
 
 		toast.success('Авторизация прошла успешно')
 
-		return response
+		return request.data
 	} catch (e: any) {
 		toast.error(e.response.data.message)
 	}
@@ -24,13 +24,13 @@ export const login = async (body: ILoginDto) => {
 
 export const register = async (body: IRegisterDto) => {
 	try {
-		const response = await axiosMain().post<IAuth>('/auth/register', body)
+		const request = await axiosMain().post<IAuth>('/auth/register', body)
 
-		setCookie('token', response.data.token)
+		setCookie('token', request.data.token)
 
 		toast.success('Регистрация прошла успешно')
 
-		return response
+		return request.data
 	} catch (e: any) {
 		toast.error(e.response.data.message)
 	}

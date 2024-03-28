@@ -17,10 +17,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='ru'>
-			<body className='dark max-w-screen-2xl m-auto'>
+			<body className='dark max-w-screen-xl m-auto'>
 				<ApiProvider>
 					<Header />
-					<main>{children}</main>
+					<main className='mt-5'>{children}</main>
 					<ToastContainer theme='dark' position='bottom-right' />
 				</ApiProvider>
 			</body>
