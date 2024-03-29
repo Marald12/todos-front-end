@@ -1,29 +1,48 @@
 'use client'
-import { FC, useState } from 'react'
+import { ChangeEvent, FC } from 'react'
 import Link from 'next/link'
-import { deleteCookie } from 'cookies-next'
+import { deleteCookie, hasCookie } from 'cookies-next'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
-import { useIsAuth } from '@/shared/hooks/isAuth'
 import Image from 'next/image'
-import { useQuery } from '@tanstack/react-query'
-import { getProfile } from '@/shared/api/user/user.api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getProfile, updateUser } from '@/shared/api/user/user.api'
+import { uploadMedia } from '@/shared/api/media/media.api'
 
 const Header: FC = () => {
-	const [auth, setAuth] = useState<boolean>()
 	const router = useRouter()
-	useIsAuth().then(value => setAuth(value))
+	const queryClient = useQueryClient()
+	const auth = hasCookie('token')
 
-	const { data } = useQuery({
+	const { data, isLoading } = useQuery({
 		queryKey: ['user'],
 		queryFn: () => getProfile()
 	})
+
+	const { mutateAsync } = useMutation({
+		mutationFn: (url: string) => updateUser(data!._id, { avatarPath: url })
+	})
+
+	if (!data && isLoading) return <div>Loading...</div>
 
 	const exitHandler = () => {
 		deleteCookie('token')
 		toast.success('Вы успешно вышли из аккаунта')
 		router.push('/')
 		router.refresh()
+	}
+
+	const fileHandler = async (e: ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files![0]
+
+		const formData = new FormData()
+		formData.append('media', file)
+
+		const media = await uploadMedia(formData, 'avatar')
+		await mutateAsync(media!.url)
+		await queryClient.invalidateQueries({
+			queryKey: ['user']
+		})
 	}
 
 	return (
@@ -36,16 +55,32 @@ const Header: FC = () => {
 			</Link>
 			{auth && (
 				<div className='flex items-center'>
-					<div className='flex items-center mr-5'>
-						<Image
-							src={data!.avatarPath}
-							alt={data!.avatarPath}
-							width={25}
-							height={25}
-							className='rounded-[50%]'
-						/>
-						<span className='ml-[15px]'>{data!.name}</span>
-					</div>
+					{data && (
+						<div className='flex items-center mr-5'>
+							<div className='relative'>
+								<Image
+									src={data?.avatarPath}
+									alt={data?.avatarPath}
+									width={35}
+									height={35}
+									className='rounded-[50%] bg-cover'
+								/>
+								<input
+									type='file'
+									className='hidden'
+									id='file'
+									onChange={e => fileHandler(e)}
+								/>
+								<label
+									htmlFor='file'
+									className='absolute -top-[2px] cursor-pointer opacity-0'
+								>
+									123
+								</label>
+							</div>
+							<span className='ml-[15px]'>{data?.name}</span>
+						</div>
+					)}
 					<span className='text-lg cursor-pointer' onClick={exitHandler}>
 						Выйти
 					</span>

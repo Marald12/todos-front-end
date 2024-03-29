@@ -8,3 +8,8 @@ export interface IUser {
 	todos: ITodo[]
 	__v: number
 }
+
+export interface IUpdateUser {
+	name?: string
+	avatarPath?: string
+}
